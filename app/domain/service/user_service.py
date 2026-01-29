@@ -20,3 +20,9 @@ class UserService:
         )
         return self._user_repo.save(user)
         
+    def get_user_by_id(self, id: int) -> User:
+        usuario = self._user_repo.get_user_by_id(id= id)
+        if not usuario:
+            raise ValueError("Usuário não encontrado")
+        
+        return usuario

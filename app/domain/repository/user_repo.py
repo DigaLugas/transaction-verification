@@ -13,4 +13,9 @@ class UserRepository:
     
     def get_user_by_email(self, email: str) -> User:
         query = select(User).where(User.email == email)
-        self._session.exec(query)
+        return self._session.exec(query).first()
+
+    def get_user_by_id(self, id: int) -> User:
+        query = select(User).where(User.id == id)
+        
+        return self._session.exec(query).first()
