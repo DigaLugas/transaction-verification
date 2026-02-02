@@ -26,3 +26,5 @@ class UserService:
             raise ValueError("Usuário não encontrado")
         
         return usuario
+    def update_user(self, user: User) -> User:
+        return self._user_repo.save(user)
