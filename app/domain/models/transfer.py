@@ -8,18 +8,19 @@ class Transfer(SQLModel, table=True):
         primary_key=True,
         index=True
     )
-
-    from_user_id: int = Field(
+    value: float = Field(nullable=False)
+    
+    payer: int = Field(
         foreign_key="user.id",
         nullable=False
     )
 
-    to_user_id: int = Field(
+    payee: int = Field(
         foreign_key="user.id",
         nullable=False
     )
 
-    amount: float = Field(nullable=False)
+    
 
     created_at: datetime = Field(
         default_factory=datetime.utcnow,

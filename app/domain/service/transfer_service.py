@@ -1,8 +1,11 @@
+import datetime
 from ..repository.transfer_repo import TransferRepository
 from ..dto.TransferCreate import TransferCreateDTO
 from ..service.user_service import UserService 
 from ..enum.user_type import UserType
+from ..models.transfer import Transfer
 import requests
+
 class TransferService():
     def __init__(self, transfer_repo: TransferRepository, user_service: UserService):
         self._transfer_repo = transfer_repo
@@ -25,13 +28,25 @@ class TransferService():
         payee.saldo += transfer_in.value
         self._user_service.update_user(payer)
         self._user_service.update_user(payee)  
-        self.notify_users()
+        self.save_transfer(Transfer(
+            value=transfer_in.value,
+            payer=payer.id,
+            payee=payee.id,
+            created_at=datetime.datetime.now()
+        ))
+        try:
+            self.notify_users()
+        except Exception:
+            raise ValueError("Falha ao notificar usuários.")  
 
-
+        
 
     def notify_users(self):
-        response = requests.post(self._notify_api, json={
-            "message": "Transferência realizada com sucesso."
-        })
-        if response.status_code != 200:
-            raise ValueError("Falha ao notificar usuários.")
+        response = requests.post(
+            self._notify_api,
+            json={"message": "Transferência realizada com sucesso."},
+            timeout=5
+        )
+        
+    def save_transfer(self, transfer: Transfer) -> Transfer:
+            return self._transfer_repo.save(transfer)
